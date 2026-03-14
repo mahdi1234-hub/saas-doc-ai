@@ -19,7 +19,7 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import {
   FileText, MessageSquare, Upload, Plus, Clock, CheckCircle2,
-  AlertCircle, Loader2, BarChart3, FileUp, Trash2,
+  AlertCircle, Loader2, BarChart3, FileUp, Trash2, Workflow, ArrowRight,
 } from "lucide-react";
 import { DocumentUpload } from "@/components/documents/document-upload";
 
@@ -214,6 +214,26 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Workflow Automation CTA */}
+        <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-transparent">
+          <CardContent className="flex items-center justify-between py-4">
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Workflow className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold">Workflow Automation</h3>
+                <p className="text-xs text-muted-foreground">Build AI-powered workflows with drag-and-drop canvas</p>
+              </div>
+            </div>
+            <Link href="/dashboard/workflows">
+              <Button size="sm" className="gap-1.5">
+                Open Editor <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Documents Table */}
