@@ -1,22 +1,37 @@
 import nodemailer from "nodemailer";
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "smtp.gmail.com",
-  port: parseInt(process.env.SMTP_PORT || "587"),
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD,
-  },
-});
+function createTransporter() {
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASSWORD;
+
+  if (!user || !pass) {
+    return null;
+  }
+
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST || "smtp.gmail.com",
+    port: parseInt(process.env.SMTP_PORT || "587"),
+    secure: false,
+    auth: { user, pass },
+  });
+}
 
 export function generateOTP(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
 export async function sendOTPEmail(email: string, otp: string) {
+  const transporter = createTransporter();
+
+  if (!transporter) {
+    console.warn(
+      `[DEV MODE] SMTP not configured. OTP for ${email}: ${otp}`
+    );
+    return;
+  }
+
   const mailOptions = {
-    from: `"DocAI SaaS" <${process.env.EMAIL_FROM}>`,
+    from: `"DocAI SaaS" <${process.env.EMAIL_FROM || process.env.SMTP_USER}>`,
     to: email,
     subject: "Your Login Code - DocAI",
     html: `
