@@ -20,7 +20,7 @@ import "@xyflow/react/dist/style.css";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Play, Square, Trash2, Save, RotateCcw, Loader2, Workflow } from "lucide-react";
+import { Play, Square, Trash2, Save, RotateCcw, Loader2, Workflow, MessageSquare } from "lucide-react";
 import {
   TriggerNode,
   AINode,
@@ -34,6 +34,7 @@ import {
 import { WorkflowSidebar } from "./workflow-sidebar";
 import { NodeConfigPanel } from "./node-config-panel";
 import { OutputPanel, type ExecutionLog } from "./output-panel";
+import { WorkflowChatPanel } from "./workflow-chat-panel";
 import type { WorkflowNodeData, NodeTemplate } from "./types";
 
 const nodeTypes: NodeTypes = {
@@ -76,6 +77,7 @@ export function WorkflowCanvas() {
   const [showOutput, setShowOutput] = useState(false);
   const [executionLogs, setExecutionLogs] = useState<ExecutionLog[]>([]);
   const [isRunning, setIsRunning] = useState(false);
+  const [showChat, setShowChat] = useState(false);
   const abortRef = useRef(false);
 
   const onConnect = useCallback(
@@ -89,6 +91,7 @@ export function WorkflowCanvas() {
     (_: React.MouseEvent, node: Node) => {
       setSelectedNode(node);
       setShowOutput(false);
+      setShowChat(false);
     },
     []
   );
@@ -468,6 +471,23 @@ export function WorkflowCanvas() {
 
               <div className="w-px h-5 bg-border" />
 
+              <Button
+                size="sm"
+                variant={showChat ? "default" : "outline"}
+                className="h-7 text-xs gap-1.5"
+                onClick={() => {
+                  setShowChat(!showChat);
+                  setShowOutput(false);
+                  setSelectedNode(null);
+                }}
+                disabled={isRunning}
+              >
+                <MessageSquare className="w-3 h-3" />
+                AI Chat
+              </Button>
+
+              <div className="w-px h-5 bg-border" />
+
               <Badge variant="secondary" className="text-[10px] h-5">
                 {nodes.length} nodes
               </Badge>
@@ -496,11 +516,24 @@ export function WorkflowCanvas() {
         />
       )}
 
-      {showOutput && (
+      {showOutput && !showChat && (
         <OutputPanel
           logs={executionLogs}
           isRunning={isRunning}
           onClose={() => setShowOutput(false)}
+        />
+      )}
+
+      {showChat && (
+        <WorkflowChatPanel
+          onApplyWorkflow={(newNodes, newEdges) => {
+            setNodes(newNodes);
+            setEdges(newEdges);
+            setSelectedNode(null);
+            setExecutionLogs([]);
+            setShowOutput(false);
+          }}
+          onClose={() => setShowChat(false)}
         />
       )}
     </div>

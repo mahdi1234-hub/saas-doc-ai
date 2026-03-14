@@ -16,7 +16,7 @@ export const onboardingSchema = z.object({
   // Step 2: Preferences
   loginMethod: z.string().min(1, "Please select a login method"),
   termsAgreement: z.literal(true, {
-    errorMap: () => ({ message: "You must agree to the terms" }),
+    message: "You must agree to the terms",
   }),
 
   // Step 3: Workspace Details
