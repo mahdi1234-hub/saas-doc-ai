@@ -73,7 +73,19 @@ export default function DashboardPage() {
       return;
     }
     if (status === "authenticated") {
-      fetchData();
+      // Check if user has been onboarded
+      fetch("/api/workspace")
+        .then((res) => res.json())
+        .then((data) => {
+          if (!data.workspaces || data.workspaces.length === 0) {
+            router.push("/onboarding");
+          } else {
+            fetchData();
+          }
+        })
+        .catch(() => {
+          fetchData();
+        });
     }
   }, [status, router, fetchData]);
 
