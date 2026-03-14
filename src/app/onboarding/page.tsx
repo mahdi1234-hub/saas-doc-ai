@@ -59,7 +59,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { TagInput } from "@/components/tag-input";
-import type { Tag } from "emblor";
+import type { Tag as EmblorTag } from "emblor";
 import {
   MultiSelect,
   MultiSelectContent,
@@ -309,7 +309,7 @@ export default function OnboardingPage() {
                 <div className="flex items-center gap-2 mb-1">
                   <Checkbox
                     id="termsAgreement"
-                    checked={field.value}
+                    checked={Boolean(field.value)}
                     onCheckedChange={field.onChange}
                     aria-invalid={fieldState.invalid}
                   />
@@ -362,7 +362,6 @@ export default function OnboardingPage() {
                         )
                     }
                     onValueChange={field.onChange}
-                    type="multiple"
                     className="flex justify-start items-center gap-2 flex-wrap"
                   >
                     {options.map(({ label, value }) => (
@@ -419,10 +418,10 @@ export default function OnboardingPage() {
                   Add tags to categorize your workspace
                 </FieldDescription>
                 <TagInput
-                  tags={(field.value ?? []) as Tag[]}
+                  tags={(field.value ?? []) as EmblorTag[]}
                   setTags={(tags) => {
                     if (typeof tags === "function") {
-                      field.onChange(tags((field.value ?? []) as Tag[]));
+                      field.onChange(tags((field.value ?? []) as EmblorTag[]));
                     } else {
                       field.onChange(tags);
                     }
@@ -448,7 +447,7 @@ export default function OnboardingPage() {
                   Select Language
                 </FieldLabel>
                 <Popover>
-                  <PopoverTrigger asChild>
+                  <PopoverTrigger>
                     <Button
                       variant="outline"
                       role="combobox"
