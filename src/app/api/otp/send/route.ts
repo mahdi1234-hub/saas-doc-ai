@@ -16,7 +16,10 @@ export async function POST(req: NextRequest) {
     // Find existing user (if any) to link the OTP token
     let user = null;
     try {
-      user = await prisma.user.findUnique({ where: { email } });
+      user = await prisma.user.findUnique({
+        where: { email },
+        select: { id: true, email: true, name: true },
+      });
     } catch (dbError) {
       console.error("Database lookup error:", dbError);
       // Continue without linking to user - OTP can still be created with just email
@@ -39,15 +42,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    try {
-      await sendOTPEmail(email, otp);
-    } catch (emailError) {
+    // Send email in the background (non-blocking) so the API responds fast
+    sendOTPEmail(email, otp).catch((emailError) => {
       console.error("Failed to send OTP email:", emailError);
-      return NextResponse.json(
-        { error: "Failed to send email. Please check your SMTP configuration." },
-        { status: 500 }
-      );
-    }
+    });
 
     return NextResponse.json({ success: true, message: "OTP sent to your email" });
   } catch (error) {

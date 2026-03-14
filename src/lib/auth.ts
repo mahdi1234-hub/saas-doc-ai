@@ -33,7 +33,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           data: { used: true },
         });
 
-        let user = await prisma.user.findUnique({ where: { email } });
+        let user = await prisma.user.findUnique({
+          where: { email },
+          select: { id: true, email: true, name: true, emailVerified: true },
+        });
 
         if (!user) {
           user = await prisma.user.create({
@@ -42,11 +45,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               emailVerified: new Date(),
               name: email.split("@")[0],
             },
+            select: { id: true, email: true, name: true, emailVerified: true },
           });
         } else if (!user.emailVerified) {
-          await prisma.user.update({
+          user = await prisma.user.update({
             where: { id: user.id },
             data: { emailVerified: new Date() },
+            select: { id: true, email: true, name: true, emailVerified: true },
           });
         }
 
@@ -75,4 +80,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/auth/login",
   },
   secret: process.env.NEXTAUTH_SECRET,
+  trustHost: true,
 });
