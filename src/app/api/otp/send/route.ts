@@ -16,7 +16,10 @@ export async function POST(req: NextRequest) {
     // Find existing user (if any) to link the OTP token
     let user = null;
     try {
-      user = await prisma.user.findUnique({ where: { email } });
+      user = await prisma.user.findUnique({
+        where: { email },
+        select: { id: true, email: true, name: true },
+      });
     } catch (dbError) {
       console.error("Database lookup error:", dbError);
       // Continue without linking to user - OTP can still be created with just email

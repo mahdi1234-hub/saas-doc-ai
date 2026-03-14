@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { FileText, LogOut, LayoutDashboard, MessageSquare } from "lucide-react";
+import { FileText, LogOut, LayoutDashboard, MessageSquare, Workflow } from "lucide-react";
 
 export function Navbar() {
   const { data: session } = useSession();
@@ -34,6 +34,10 @@ export function Navbar() {
               <Link href="/chat" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5">
                 <MessageSquare className="h-4 w-4" />
                 Chat
+              </Link>
+              <Link href="/dashboard/workflows" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5">
+                <Workflow className="h-4 w-4" />
+                Workflows
               </Link>
             </>
           )}
@@ -67,6 +71,12 @@ export function Navbar() {
                   <Link href="/chat" className="flex items-center w-full">
                     <MessageSquare className="mr-2 h-4 w-4" />
                     Chat
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link href="/dashboard/workflows" className="flex items-center w-full">
+                    <Workflow className="mr-2 h-4 w-4" />
+                    Workflows
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
