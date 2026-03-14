@@ -13,19 +13,41 @@ export async function POST(req: NextRequest) {
     const otp = generateOTP();
     const expires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    // Find or create user
-    let user = await prisma.user.findUnique({ where: { email } });
+    // Find existing user (if any) to link the OTP token
+    let user = null;
+    try {
+      user = await prisma.user.findUnique({ where: { email } });
+    } catch (dbError) {
+      console.error("Database lookup error:", dbError);
+      // Continue without linking to user - OTP can still be created with just email
+    }
 
-    await prisma.otpToken.create({
-      data: {
-        email,
-        otp,
-        expires,
-        userId: user?.id || null,
-      },
-    });
+    try {
+      await prisma.otpToken.create({
+        data: {
+          email,
+          otp,
+          expires,
+          userId: user?.id || null,
+        },
+      });
+    } catch (dbError) {
+      console.error("Failed to store OTP in database:", dbError);
+      return NextResponse.json(
+        { error: "Database error. Please check your DATABASE_URL configuration." },
+        { status: 500 }
+      );
+    }
 
-    await sendOTPEmail(email, otp);
+    try {
+      await sendOTPEmail(email, otp);
+    } catch (emailError) {
+      console.error("Failed to send OTP email:", emailError);
+      return NextResponse.json(
+        { error: "Failed to send email. Please check your SMTP configuration." },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({ success: true, message: "OTP sent to your email" });
   } catch (error) {
