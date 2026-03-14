@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 
-const cerebras = new OpenAI({
-  baseURL: "https://api.cerebras.ai/v1",
-  apiKey: process.env.CEREBRAS_API_KEY,
-});
+function getCerebrasClient() {
+  return new OpenAI({
+    baseURL: "https://api.cerebras.ai/v1",
+    apiKey: process.env.CEREBRAS_API_KEY || "placeholder",
+  });
+}
 
 interface WorkflowAIRequest {
   nodeType: string;
@@ -55,6 +57,7 @@ export async function POST(request: NextRequest) {
 
     messages.push({ role: "user", content: prompt });
 
+    const cerebras = getCerebrasClient();
     const completion = await cerebras.chat.completions.create({
       model: model || "llama-4-scout-17b-16e-instruct",
       messages,

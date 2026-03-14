@@ -13,6 +13,8 @@ function createTransporter() {
     port: parseInt(process.env.SMTP_PORT || "587"),
     secure: false,
     auth: { user, pass },
+    connectionTimeout: 5000,
+    socketTimeout: 5000,
   });
 }
 
