@@ -123,6 +123,36 @@ export default function DashboardPage() {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
+  // Load chatbar widget
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.type = "module";
+    script.textContent = `
+      import { embedWidget } from "https://cdn.jsdelivr.net/npm/agent-embed-widget/dist/agent-embed-widget.es.js";
+      embedWidget({
+        type: "chatbar",
+        url: "https://console.thesys.dev/app/EZYdBSAhPTkAmUbtutDob",
+        theme: "light",
+        hideLogin: true,
+        options: {
+          theme: {
+            containerFills: "#fcf8ff",
+            strokeDefault: "rgba(0, 0, 0, 0.06)",
+            roundedL: "12px",
+            primaryText: "#07070e",
+            interactiveAccent: "#1B1A27",
+            accentPrimaryText: "rgba(255, 255, 255, 1)",
+            roundedS: "8px",
+          },
+        },
+      });
+    `;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   if (status === "loading" || loading) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
