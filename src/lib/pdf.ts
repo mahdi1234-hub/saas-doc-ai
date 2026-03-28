@@ -1,7 +1,4 @@
-import * as pdfParseModule from "pdf-parse";
-
-// Handle both ESM and CJS exports
-const pdfParse = (pdfParseModule as unknown as { default?: typeof pdfParseModule }).default || pdfParseModule;
+import { PDFParse } from "pdf-parse";
 
 export interface PdfChunk {
   content: string;
@@ -13,10 +10,13 @@ export async function extractTextFromPdf(buffer: Buffer): Promise<{
   pageCount: number;
   fullText: string;
 }> {
-  const parseFn = pdfParse as unknown as (buf: Buffer) => Promise<{ text: string; numpages: number }>;
-  const data = await parseFn(buffer);
-  const fullText = data.text;
-  const pageCount = data.numpages;
+  // pdf-parse v2 requires Uint8Array instead of Buffer
+  const uint8 = new Uint8Array(buffer);
+  const parser = new PDFParse(uint8);
+  const result = await parser.getText();
+
+  const fullText = result.text;
+  const pageCount = result.total;
 
   // Split text into chunks of ~500 words
   const words = fullText.split(/\s+/);
